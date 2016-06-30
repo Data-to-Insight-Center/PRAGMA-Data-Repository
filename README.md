@@ -49,7 +49,7 @@ mvn clean install -Dmaven.test.skip=true
 Please deploy the below war file into your tomcat /webapps directory and enable the service.
 
 ```
-./target/data.repository.pragma-0.1.0.war
+cp ./target/data.repository.pragma-0.1.0.war <tomcat>/webapps/
 ```
 
 
