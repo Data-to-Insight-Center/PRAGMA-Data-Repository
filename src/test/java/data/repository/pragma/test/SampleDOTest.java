@@ -114,7 +114,7 @@ public class SampleDOTest extends ApplicationTests {
 		logger.info("Step 3 - Replicate DO to permanent Repository...");
 		String repoID = DOAdd(id);
 
-		logger.info("Registered PID Handle record:" + repoID);
+		logger.info("DO permanent repo ID:" + repoID);
 	}
 
 	@Test
@@ -188,8 +188,8 @@ public class SampleDOTest extends ApplicationTests {
 		String input_repoID = DOAdd(input_id);
 		String output_repoID = DOAdd(output_id);
 
-		logger.info("Registered Input PID Handle record:" + input_repoID);
-		logger.info("Registered Output PID Handle record:" + output_repoID);
+		logger.info("Input DO permanent repo ID:" + input_repoID);
+		logger.info("Output DO permanent repo ID:" + output_repoID);
 	}
 
 	public Map<String, String> AgFiles2Map(File file, String split) throws Exception {
