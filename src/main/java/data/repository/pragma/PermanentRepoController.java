@@ -88,6 +88,23 @@ public class PermanentRepoController {
 		}
 	}
 
+	@RequestMapping(value = "/repo/find/DO", method = RequestMethod.GET)
+	@ResponseBody
+	public MessageResponse DOfindAll(@RequestParam(value = "ID", required = true) String ID) {
+		// Connect to MongoDB and return DO data files as response
+		// return
+		try {
+			GridFSDBFile doc = permanent_repository.findDOByID(ID);
+			MessageResponse response = new MessageResponse(true, doc.toString());
+			return response;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			MessageResponse response = new MessageResponse(false, null);
+			return response;
+		}
+	}
+
 	@RequestMapping("/repo/list")
 	@ResponseBody
 	public MessageListResponse DOlist() {
