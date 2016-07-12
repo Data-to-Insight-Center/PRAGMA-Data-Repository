@@ -58,7 +58,7 @@ public class DataObjectController {
 	@RequestMapping(value = "/DO/upload", method = RequestMethod.POST)
 	@ResponseBody
 	public MessageResponse DOupload(@RequestParam(value = "data", required = true) MultipartFile file,
-			@RequestBody String metadata) {
+			@RequestParam(value="metadata", required = true) String metadata) {
 		try {
 			// Create metadata DBObject from input
 			DBObject metadataObject = (DBObject) JSON.parse(metadata);
