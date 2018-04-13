@@ -29,11 +29,11 @@ git clone https://github.com/Data-to-Insight-Center/PRAGMA-Data-Repository.git
 
 Edit the MongoConfig.xml file found under src/main/resources and set your backend mongoDB uri with username/password if exists.
 ```
-vi Data-Service-server/src/main/resources/MongoConfig.xml
+vi PRAGMA-Data-Repository/src/main/resources/MongoConfig.xml
 ```
 Edit the SpringConfig.properties file under src/main/resources;
 ```
-vi Data-Service-server/src/main/resources/SpringConfig.properties
+vi PRAGMA-Data-Repository/src/main/resources/SpringConfig.properties
 ```
 
 Build PRAGMA Data Repository
@@ -49,12 +49,12 @@ mvn clean install -Dmaven.test.skip=true
 Please deploy the below war file into your tomcat /webapps directory and enable the service.
 
 ```
-cp ./target/data.repository.pragma-0.1.0.war <tomcat>/webapps/
+cp ./target/pragma-data-repo.war <tomcat>/webapps/
 ```
 
 
 ##Contributing
-This software release is under ISC licence.
+This software release is under Apache 2.0 Licence.
 
 ##Release History
 * 0.1.0 1st release 2016.06.24
