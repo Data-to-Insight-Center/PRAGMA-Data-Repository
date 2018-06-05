@@ -52,8 +52,8 @@ Please deploy the below war file into your tomcat /webapps directory and enable 
 cp ./target/pragma-data-repo.war <tomcat>/webapps/
 ```
 
-## Contributing
+# Contributing
 This software release is under Apache 2.0 Licence.
 
-## Release History
+# Release History
 * 0.1.0 1st release 2016.06.24
