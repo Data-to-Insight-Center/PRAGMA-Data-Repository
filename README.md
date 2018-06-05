@@ -7,7 +7,7 @@ PRAGMA data repository is implemented with MongoDB, which provides sharding feat
 # Architecture
 <img src="https://raw.githubusercontent.com/Data-to-Insight-Center/PRAGMA-Data-Repository/master/docs/repo-arch.png" width="400" height="300">
 
-#Installation Guide
+# Installation Guide
 
 ## Software Dependencies
 
@@ -21,8 +21,8 @@ PRAGMA data repository is implemented with MongoDB, which provides sharding feat
 1. This software can be deployed on physical resources or VM instance with public network interface.
 2. For public access, it requires 1 open port which iptables rules allow traffic through the firewall for Tomcat webapp container.
 
-##Building the Source
-Check Out Source Codes:
+## Building the Source
+Check out source codes:
 ```
 git clone https://github.com/Data-to-Insight-Center/PRAGMA-Data-Repository.git
 ```
@@ -45,16 +45,15 @@ If you want to skip maven test, run the following cmd:
 mvn clean install -Dmaven.test.skip=true
 ```
 
-##Deploy Data Repository Service 
+## Deploy Data Repository Service 
 Please deploy the below war file into your tomcat /webapps directory and enable the service.
 
 ```
 cp ./target/pragma-data-repo.war <tomcat>/webapps/
 ```
 
-
-##Contributing
+## Contributing
 This software release is under Apache 2.0 Licence.
 
-##Release History
+## Release History
 * 0.1.0 1st release 2016.06.24
