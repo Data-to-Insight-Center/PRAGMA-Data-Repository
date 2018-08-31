@@ -21,16 +21,20 @@
 	<display-name>edu.indiana.pragma</display-name>
 
 	<servlet>
-		<servlet-name>Jersey REST Service for PRAGMA Data Service Server</servlet-name>
+		<servlet-name>Jersey REST Service for PRAGMA Data Repository</servlet-name>
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
 		<init-param>
 			<param-name>com.sun.jersey.config.property.packages</param-name>
-			<param-value>edu.indiana.pragma;org.codehaus.jackson.jaxrs</param-value>
+			<param-value>data.repository.pragma;org.codehaus.jackson.jaxrs</param-value>
 		</init-param>
 		<init-param>
-			<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-			<param-value>edu.indiana.pragma.SimpleCORSFilter</param-value>
+			<param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+			<param-value>true</param-value>
 		</init-param>
+		<!--<init-param>-->
+			<!--<param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>-->
+			<!--<param-value>data.repository.pragma.SimpleCORSFilter</param-value>-->
+		<!--</init-param>-->
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 

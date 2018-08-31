@@ -1,10 +1,5 @@
 package data.repository.pragma.test;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,28 +9,25 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+
+import com.sun.jersey.multipart.FormDataMultiPart;
+import com.sun.jersey.multipart.MultiPart;
+import com.sun.jersey.server.impl.application.WebApplicationContext;
+import data.repository.pragma.response.MessageResponse;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import data.repository.pragma.response.MessageResponse;
 
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
+import javax.ws.rs.core.MediaType;
 
-public class SampleDOTest extends ApplicationTests {
+public class SampleDOTest {
 
 	private final static Logger logger = Logger.getLogger(SampleDOTest.class);
 
-	@Autowired
 	private WebApplicationContext webApplicationContext;
 
 	private MockMvc mockMvc;
@@ -169,8 +161,7 @@ public class SampleDOTest extends ApplicationTests {
 		output_node.put("downloadingURL", "");
 
 		// Construct data as multipart file
-		MockMultipartFile input_data = new MockMultipartFile("data", input_path, "text/plain",
-				new FileInputStream(input_file));
+		FormDataMultiPart input_data = new FormDataMultiPart().field("data", input_path, MediaType.valueOf("text/plain"));
 
 		MockMultipartFile output_data = new MockMultipartFile("data", output_path, "text/plain",
 				new FileInputStream(output_file));
