@@ -19,50 +19,36 @@ package org.iu.d2i.pragma;
  * @author kunarath@iu.edu
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+
 import com.sun.jersey.core.header.FormDataContentDisposition;
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataMultiPart;
 import com.sun.jersey.multipart.MultiPart;
 import com.sun.jersey.multipart.file.FileDataBodyPart;
-import com.sun.jersey.server.impl.application.WebApplicationContext;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonNode;
 import org.iu.d2i.pragma.response.MessageResponse;
-import org.junit.Before;
 import org.junit.Test;
 import org.apache.log4j.PropertyConfigurator;
 
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.core.MediaType;
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-public class SampleDOTest {
+public class SampleDOTest{
 
 	private final static Logger logger = Logger.getLogger(SampleDOTest.class);
-
-	private WebApplicationContext webApplicationContext;
-
-	private Client client;
-
+	// Need to change according to your localhost URL
 	String repo_uri = "http://localhost:8080/data-repository-rewrite/";
-
-	@Before
-	public void setup() throws FileNotFoundException, IOException {
-		final Client mockMvc = (Client) ClientBuilder.newBuilder().register(SampleDOTest.class).build();
-	}
 
 	@Test
 	public void DOSampleProcess() throws Exception {
-		// Set up basic logging mechanism
+
+	// Set up basic logging mechanism
 		ClassLoader classLoader = getClass().getClassLoader();
 		File log4j_file = new File(classLoader.getResource("log4j.properties").getFile());
 		Properties logProperties = new Properties();
@@ -99,7 +85,7 @@ public class SampleDOTest {
 		logger.info("Upload DO downloading URL:");
 		logger.info("Upload metadata object:" + node.toString());
 
-		String id = DOUpload(node.toString(), data);
+		String id = DOUpload(node.toString(), file);
 
 		logger.info("Object StagingDB ID is:" + id);
 
@@ -206,13 +192,8 @@ public class SampleDOTest {
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		output_data.bodyPart(file_output_data);
 
-
-		//FormDataMultiPart input_data = new FormDataMultiPart().field("data", input_path, MediaType.valueOf("text/plain"));
-
-		//FormDataMultiPart output_data = new FormDataMultiPart().field("data", output_path, MediaType.valueOf("text/plain"));
-
-		String input_id = DOUpload(input_node.toString(), input_data);
-		String output_id = DOUpload(output_node.toString(), output_data);
+		String input_id = DOUpload(input_node.toString(), input_file);
+		String output_id = DOUpload(output_node.toString(), output_file);
 
 		logger.info("Input Object StagingDB ID is:" + input_id);
 		logger.info("Output Object StagingDB ID is:" + output_id);
@@ -253,54 +234,56 @@ public class SampleDOTest {
 		return output;
 	}
 
-	public String DOUpload(String metadata, FormDataMultiPart data) throws Exception {
-		MvcResult upload_result = client.perform(fileUpload("/DO/upload").file(data).content(metadata))
-				.andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
-				.andExpect(jsonPath("$.success").value(true)).andReturn();
+	public static String getStringFromInputStream(InputStream is) {
+		BufferedReader br = null;
+		final StringBuilder sb = new StringBuilder();
+		String line;
+		try {
+			br = new BufferedReader(new InputStreamReader(is));
+			while ((line = br.readLine()) != null) {
+				sb.append(line);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if (br != null) {
+				try {
+					br.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return sb.toString();
+	}
 
-		String upload_response = upload_result.getResponse().getContentAsString();
-		MessageResponse upload_json = new ObjectMapper().readValue(upload_response, MessageResponse.class);
-		String id = upload_json.getMessage();
-		return id;
+	public String DOUpload(String metadata, File data) throws Exception {
 
-		WebResource uploadDOResource = client.resource(repo_uri + "DO/upload");
-		// Add data to request param
-		File fileToUpload = new File("./" + DOname + ".zip");
-
-		FileDataBodyPart fileDataBodyPart = new FileDataBodyPart("data", fileToUpload,
+		WebResource uploadDOResource = Client.create().resource(repo_uri + "DO/upload");
+		FileDataBodyPart fileDataBodyPart = new FileDataBodyPart("data", data,
 				MediaType.APPLICATION_OCTET_STREAM_TYPE);
 		fileDataBodyPart.setContentDisposition(
-				FormDataContentDisposition.name("data").fileName(fileToUpload.getName()).build());
-
-		// Add metadata to request param
-
-		JsonNode metadata = JsonUtils.readUrl2JsonNode(workflow);
-		org.codehaus.jackson.node.ObjectNode jNode = mapper.createObjectNode();
-		jNode.put("metadata", metadata);
-		jNode.put("DOname", DOname);
-		jNode.put("DataType", data_type);
-		jNode.put("DownloadingURL", "");
+				FormDataContentDisposition.name("data").fileName(data.getName()).build());
 
 		// Setup Multipart Upload Content
 		final MultiPart uploadDOMultiPart = new FormDataMultiPart()
-				.field("metadata", jNode.toString(), MediaType.APPLICATION_JSON_TYPE).bodyPart(fileDataBodyPart);
+				.field("metadata", metadata, MediaType.APPLICATION_JSON_TYPE).bodyPart(fileDataBodyPart);
 		uploadDOMultiPart.setMediaType(MediaType.MULTIPART_FORM_DATA_TYPE);
 
 		// POST request final
-		ClientResponse uploadDOResponse = uploadDOResource.type("multipart/form-data").post(ClientResponse.class,
+		ClientResponse uploadDOResponse = uploadDOResource.type(MediaType.MULTIPART_FORM_DATA_TYPE).post(ClientResponse.class,
 				uploadDOMultiPart);
-		String stagingID = dataIdentity.client.galaxy.utils.JsonUtils
-				.getStringFromInputStream(uploadDOResponse.getEntityInputStream());
+		String staging_id = SampleDOTest.getStringFromInputStream(uploadDOResponse.getEntityInputStream());
+		return staging_id;
 	}
 
 	public String DOAdd(String id) throws Exception {
 
-
-		WebResource addDOResource = client.resource(repo_uri + "DO/add");
+		WebResource addDOResource = Client.create().resource(repo_uri + "DO/add");
 
 		final MultiPart addMultiPart = new FormDataMultiPart().field("ID", id);
 		addMultiPart.setMediaType(MediaType.APPLICATION_JSON_TYPE);
-		MessageResponse addDOResponse = addDOResource.type("multipart/form-data").post(MessageResponse.class,
+		MessageResponse addDOResponse = addDOResource.type(MediaType.MULTIPART_FORM_DATA_TYPE).post(MessageResponse.class,
 				addMultiPart);
 		return addDOResponse.getMessage();
 	}
