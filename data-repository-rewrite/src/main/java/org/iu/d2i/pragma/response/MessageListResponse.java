@@ -18,7 +18,7 @@
  * @creator quzhou@umail.iu.edu
  */
 
-package data.repository.pragma.response;
+package org.iu.d2i.pragma.response;
 
 import java.util.List;
 

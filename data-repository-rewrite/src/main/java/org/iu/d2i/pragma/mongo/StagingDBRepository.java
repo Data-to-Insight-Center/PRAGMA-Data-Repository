@@ -19,27 +19,25 @@
  * @rewritten by kunarath@iu.edu
  */
 
-package data.repository.pragma.mongo;
+package org.iu.d2i.pragma.mongo;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.gridfs.GridFSInputFile;
-import data.repository.pragma.utils.MongoDB;
-
-import com.mongodb.DB;
-import com.mongodb.DBObject;
-import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.*;
 import com.mongodb.gridfs.GridFS;
+import com.mongodb.gridfs.GridFSInputFile;
+import com.mongodb.gridfs.GridFSDBFile;
 
-public class PermanentRepository {
+import org.bson.types.ObjectId;
+import org.iu.d2i.pragma.util.Constants;
 
-	MongoDatabase db = MongoDB.getPermanentDatabase();
-	GridFS file_store = new GridFS((DB) db, "fs");
+public class StagingDBRepository {
+
+	Mongo mongo = new Mongo(Constants.mongoHost, Constants.mongoPort);
+	DB db = mongo.getDB(Constants.stagingDbName);
+	GridFS file_store = new GridFS(db);
 
 	public String addDO(InputStream inputStream, String file_name, String content_type, DBObject metadata) {
 		GridFSInputFile gfsFile = file_store.createFile(inputStream);
@@ -60,10 +58,26 @@ public class PermanentRepository {
 	}
 
 	public GridFSDBFile findDOByID(String id) {
-		BasicDBObject query = new BasicDBObject();
-		query.put("_id", id);
-		GridFSDBFile gridFile = file_store.findOne(query);
+		ObjectId object_id = new ObjectId(id);
+		GridFSDBFile gridFile = file_store.findOne(object_id);
 		return gridFile;
 	}
 
+	public boolean deleteDOByID(String id) {
+		ObjectId object_id = new ObjectId(id);
+		GridFSDBFile gridFile = file_store.findOne(object_id);
+		if (gridFile.getId().equals(object_id)) {
+			file_store.remove(object_id);
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public boolean existDOByID(String id) {
+		ObjectId object_id = new ObjectId(id);
+		GridFSDBFile gridFile = file_store.findOne(object_id);
+		boolean result = gridFile.getId().equals(object_id);
+		return result;
+	}
 }

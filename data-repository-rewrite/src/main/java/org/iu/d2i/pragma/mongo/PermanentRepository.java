@@ -19,23 +19,25 @@
  * @rewritten by kunarath@iu.edu
  */
 
-package data.repository.pragma.mongo;
+package org.iu.d2i.pragma.mongo;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.mongodb.*;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSInputFile;
+import org.bson.types.ObjectId;
+import org.iu.d2i.pragma.util.Constants;
+
 import com.mongodb.gridfs.GridFSDBFile;
-import data.repository.pragma.utils.MongoDB;
+import com.mongodb.gridfs.GridFS;
 
-public class StagingDBRepository {
+public class PermanentRepository {
 
-	MongoDatabase db = MongoDB.getStagingDatabase();
-	GridFS file_store = new GridFS((DB) db, "fs");
+	Mongo mongo = new Mongo(Constants.mongoHost, Constants.mongoPort);
+	DB db = mongo.getDB(Constants.permanentDbName);
+	GridFS file_store = new GridFS(db);
 
 	public String addDO(InputStream inputStream, String file_name, String content_type, DBObject metadata) {
 		GridFSInputFile gfsFile = file_store.createFile(inputStream);
@@ -56,27 +58,9 @@ public class StagingDBRepository {
 	}
 
 	public GridFSDBFile findDOByID(String id) {
-		BasicDBObject query = new BasicDBObject();
-		query.put("_id", id);
-		GridFSDBFile gridFile = file_store.findOne(query);
+		ObjectId object_id = new ObjectId(id);
+		GridFSDBFile gridFile = file_store.findOne(object_id);
 		return gridFile;
 	}
 
-	public boolean deleteDOByID(String id) {
-		BasicDBObject delete_query = new BasicDBObject();
-		delete_query.put("_id", id);
-		if (file_store.findOne(delete_query).equals(null)){
-			return false;
-		}else{
-			file_store.remove(delete_query);
-			return true;
-		}
-	}
-
-	public boolean existDOByID(String id) {
-		BasicDBObject exist_query = new BasicDBObject();
-		exist_query.put("_id", id);
-		boolean result = file_store.findOne(exist_query).equals(null);
-		return !result;
-	}
 }
