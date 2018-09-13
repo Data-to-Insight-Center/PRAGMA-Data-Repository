@@ -35,10 +35,6 @@ vi data-repository-rewrite/src/main/resources/org/iu/d2i/pragma/util/default.pro
 ```
 Build PRAGMA Data Repository:
 ```
-mvn clean install
-```
-If you want to skip maven test, run the following cmd:
-``` 
 mvn clean install -Dmaven.test.skip=true
 ```
 
